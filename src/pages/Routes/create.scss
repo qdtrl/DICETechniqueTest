@@ -15,6 +15,10 @@ form.routes-form {
     width: 100%;
     border-collapse: collapse;
     margin: 0.5rem 0;
+    tbody {
+      max-height: 40vh;
+      overflow-y: auto;
+    }
     th,
     td {
       color: $text-color;

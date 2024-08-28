@@ -1,21 +1,37 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RouteProps, WaypointProps } from "../../models";
 import "./create.scss";
 import { Delete } from "@mui/icons-material";
-import Cookies from "js-cookie";
-import { COOKIE_DATA } from "../../configs/config";
 import { generateRandomId } from "../../functions";
+import { PointContext, RoutesContext } from "../../contexts";
 
 const RouteCreate = () => {
   const navigate = useNavigate();
 
+  const { routes, setRoutes } = useContext(RoutesContext) as any;
+  const { point, setPoint } = useContext(PointContext);
+
   const [newRoute, setNewRoute] = useState<RouteProps>({
     id: generateRandomId(),
+    show: true,
     name: "",
     startDate: "",
     points: [],
   });
+
+  useEffect(() => {
+    if (!point) return;
+    setNewRoute({
+      ...newRoute,
+      points: [
+        ...newRoute.points,
+        { ...point, name: "WP " + (newRoute.points.length + 1) },
+      ],
+    });
+    setPoint(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [point]);
 
   const [newPoint, setNewPoint] = useState<WaypointProps>({
     id: generateRandomId(),
@@ -27,9 +43,7 @@ const RouteCreate = () => {
   const handleAddRoute = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const oldRoutes = JSON.parse(Cookies.get(COOKIE_DATA) || "[]");
-
-    Cookies.set(COOKIE_DATA, JSON.stringify([...oldRoutes, newRoute]));
+    setRoutes([...routes, newRoute]);
 
     navigate("/");
   };

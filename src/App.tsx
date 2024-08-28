@@ -1,17 +1,29 @@
-import { RouteProps } from "./models";
+import { RouteProps, WaypointProps } from "./models";
 import { Drawer, Map } from "./components";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { useState } from "react";
-import { RouteContext } from "./contexts";
+import { useEffect, useState } from "react";
+import { PointContext, RoutesContext } from "./contexts";
+import Cookies from "js-cookie";
+import { COOKIE_DATA } from "./configs/config";
 
 const App = () => {
-  const [route, setRoute] = useState<RouteProps | null>(null);
+  const [routes, setRoutes] = useState<Array<RouteProps>>(
+    JSON.parse(Cookies.get(COOKIE_DATA) || "[]")
+  );
+
+  const [point, setPoint] = useState<WaypointProps | null>(null);
+
+  useEffect(() => {
+    Cookies.set(COOKIE_DATA, JSON.stringify(routes));
+  }, [routes]);
 
   return (
-    <RouteContext.Provider value={{ route, setRoute }}>
-      <Map />
-      <Drawer />
-    </RouteContext.Provider>
+    <RoutesContext.Provider value={{ routes, setRoutes }}>
+      <PointContext.Provider value={{ point, setPoint }}>
+        <Map />
+        <Drawer />
+      </PointContext.Provider>
+    </RoutesContext.Provider>
   );
 };
 

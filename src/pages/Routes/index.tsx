@@ -1,27 +1,17 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Edit, Delete, Visibility } from "@mui/icons-material";
 import "./index.scss";
 import { RouteProps } from "../../models";
-import Cookies from "js-cookie";
-import { COOKIE_DATA } from "../../configs/config";
-import { RouteContext } from "../../contexts";
+import { RoutesContext } from "../../contexts";
 
 const RouteIndex = () => {
   const navigate = useNavigate();
 
-  const { route, setRoute } = useContext(RouteContext);
-
-  const [routes, setRoutes] = useState<Array<RouteProps>>([]);
-
-  useEffect(() => {
-    setRoutes(JSON.parse(Cookies.get(COOKIE_DATA) || "[]"));
-  }, []);
+  const { routes, setRoutes } = useContext(RoutesContext) as any;
 
   const handleDeleteRoute = (id: string) => () => {
-    const newRoutes = routes.filter((rte: RouteProps) => rte.id !== id);
-    Cookies.set(COOKIE_DATA, JSON.stringify(newRoutes));
-    setRoutes(newRoutes);
+    setRoutes(routes.filter((rte: RouteProps) => rte.id !== id));
   };
 
   return (
@@ -31,6 +21,9 @@ const RouteIndex = () => {
         <button
           onClick={() => {
             navigate("/create");
+            setRoutes([
+              ...routes.map((rte: RouteProps) => ({ ...rte, show: false })),
+            ]);
           }}
         >
           Add
@@ -38,32 +31,42 @@ const RouteIndex = () => {
       </div>
 
       <div className="routes-list">
-        {routes.map((rte: RouteProps) => (
-          <div className="row-route" key={rte.id}>
+        {routes.map((route: RouteProps) => (
+          <div className="row-route" key={route.id}>
             <p
               style={{
-                textDecoration: route?.id === rte.id ? "underline" : "none",
+                textDecoration: route.show ? "underline" : "none",
               }}
             >
-              {rte.name}
+              {route.name}
             </p>
             <div className="row-route-actions">
               <button
                 onClick={() => {
-                  setRoute(rte);
+                  setRoutes(
+                    routes.map((rte: RouteProps) =>
+                      route.id === rte.id ? { ...rte, show: !rte.show } : rte
+                    )
+                  );
                 }}
               >
                 <Visibility />
               </button>
               <button
                 onClick={() => {
-                  setRoute(rte);
-                  navigate("/edit/" + rte.id);
+                  setRoutes(
+                    routes.map((rte: RouteProps) =>
+                      route.id === rte.id
+                        ? { ...rte, show: true }
+                        : { ...rte, show: false }
+                    )
+                  );
+                  navigate("/edit/" + route.id);
                 }}
               >
                 <Edit />
               </button>
-              <button onClick={handleDeleteRoute(rte.id)}>
+              <button onClick={handleDeleteRoute(route.id)}>
                 <Delete />
               </button>
             </div>
