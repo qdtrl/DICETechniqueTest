@@ -9,11 +9,19 @@ section.drawer {
   background-color: $background-color;
   min-width: 300px;
 
-  div.drawer-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 0 1rem;
+  div.routes-container {
+    div.routes-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0 1rem;
+      div.routes-header-left {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+      }
+    }
   }
 
   div.footer {

@@ -1,16 +1,17 @@
-import React, { Fragment, useState } from "react";
-import { WaypointProps } from "./models";
+import { RouteProps } from "./models";
 import { Drawer, Map } from "./components";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { useState } from "react";
+import { RouteContext } from "./contexts";
 
 const App = () => {
-  const [route, setRoute] = useState<WaypointProps | null>(null);
+  const [route, setRoute] = useState<RouteProps | null>(null);
 
   return (
-    <Fragment>
-      <Map route={route} />
-      <Drawer setRoute={setRoute} />
-    </Fragment>
+    <RouteContext.Provider value={{ route, setRoute }}>
+      <Map />
+      <Drawer />
+    </RouteContext.Provider>
   );
 };
 

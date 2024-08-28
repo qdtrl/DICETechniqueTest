@@ -1,0 +1,18 @@
+@import "../../configs/config.scss";
+
+div.row-route {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 1rem;
+  div.row-route-actions {
+    display: flex;
+    align-items: center;
+    button {
+      background-color: transparent;
+    }
+    svg {
+      font-size: 1rem;
+    }
+  }
+}

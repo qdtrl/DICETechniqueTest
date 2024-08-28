@@ -19,11 +19,21 @@ h1 {
   font-size: 1.2rem;
 }
 
+p {
+  color: $text-color;
+}
+
 button {
   background-color: $primary-color;
   color: $text-color;
   border: none;
+  height: fit-content;
   padding: 0.5rem 1rem;
   cursor: pointer;
   font-size: 0.8rem;
+
+  &:disabled {
+    background-color: $text-color-dark;
+    opacity: 0.5;
+  }
 }

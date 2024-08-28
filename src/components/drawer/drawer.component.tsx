@@ -1,13 +1,19 @@
 import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { RouteCreate, RouteIndex, RouteUpdate } from "../../pages";
 import "./drawer.scss";
 
-const Drawer = ({ setRoute }: { setRoute: Function }) => {
+const Drawer = () => {
   return (
     <section className="drawer">
-      <div className="drawer-header">
-        <h1>Routes</h1>
-        <button>Add</button>
-      </div>
+      <Router>
+        <Routes>
+          <Route path="/" element={<RouteIndex />} />
+          <Route path="/create" element={<RouteCreate />} />
+          <Route path="/edit/:id" element={<RouteUpdate />} />
+        </Routes>
+      </Router>
+
       <div className="footer">
         <p>React test - Quentin Touroul</p>
       </div>

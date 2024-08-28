@@ -1,0 +1,42 @@
+@import "../../configs/config.scss";
+
+form.routes-form {
+  display: flex;
+  flex-direction: column;
+  margin: 0 1rem;
+
+  input {
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    border: 1px solid $text-color;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.5rem 0;
+    th,
+    td {
+      color: $text-color;
+      text-align: center;
+      font-size: 0.7rem;
+      button {
+        svg {
+          font-size: 1rem;
+        }
+        background-color: transparent;
+      }
+    }
+    tr {
+      border-bottom: 1px solid $text-color;
+    }
+  }
+
+  label {
+    margin: 0;
+    font-size: 0.7rem;
+    text-decoration: underline;
+    font-style: italic;
+    color: $text-color;
+  }
+}
