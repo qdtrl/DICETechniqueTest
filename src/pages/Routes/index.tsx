@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { Edit, Delete, Visibility } from "@mui/icons-material";
+import { Edit, Delete, Visibility, VisibilityOff } from "@mui/icons-material";
 import "./index.scss";
 import { RouteProps } from "../../models";
 import { RoutesContext } from "../../contexts";
@@ -33,13 +33,7 @@ const RouteIndex = () => {
       <div className="routes-list">
         {routes.map((route: RouteProps) => (
           <div className="row-route" key={route.id}>
-            <p
-              style={{
-                textDecoration: route.show ? "underline" : "none",
-              }}
-            >
-              {route.name}
-            </p>
+            <p>{route.name}</p>
             <div className="row-route-actions">
               <button
                 onClick={() => {
@@ -50,7 +44,7 @@ const RouteIndex = () => {
                   );
                 }}
               >
-                <Visibility />
+                {route.show ? <Visibility /> : <VisibilityOff />}
               </button>
               <button
                 onClick={() => {
