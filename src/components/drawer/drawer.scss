@@ -2,6 +2,8 @@
 
 section.drawer {
   height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
   width: 20vw;
   right: 0;
   top: 0;
@@ -25,10 +27,12 @@ section.drawer {
   }
 
   div.footer {
-    position: absolute;
+    position: fixed;
     bottom: 0;
     height: 30px;
-    width: 100%;
+    width: 20vw;
+    min-width: 300px;
+
     background-color: $background-color-light;
     display: flex;
     justify-content: center;

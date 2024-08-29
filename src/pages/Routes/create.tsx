@@ -21,6 +21,19 @@ const RouteCreate = () => {
   });
 
   useEffect(() => {
+    if (!routes.find((rte: RouteProps) => rte.id === newRoute.id)) {
+      setRoutes([...routes, newRoute]);
+    } else {
+      setRoutes([
+        ...routes.map((rte: RouteProps) =>
+          rte.id === newRoute.id ? newRoute : rte
+        ),
+      ]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [newRoute]);
+
+  useEffect(() => {
     if (!point) return;
     setNewRoute({
       ...newRoute,
@@ -42,8 +55,6 @@ const RouteCreate = () => {
 
   const handleAddRoute = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    setRoutes([...routes, newRoute]);
 
     navigate("/");
   };
@@ -67,6 +78,9 @@ const RouteCreate = () => {
         <div className="routes-header-left">
           <button
             onClick={() => {
+              setRoutes([
+                ...routes.filter((rte: RouteProps) => rte.id !== newRoute.id),
+              ]);
               navigate("/");
             }}
           >
@@ -181,6 +195,7 @@ const RouteCreate = () => {
         <button
           style={{
             marginTop: "4rem",
+            marginBottom: "4rem",
           }}
           disabled={
             newRoute.name === "" ||

@@ -16,6 +16,11 @@ const RouteUpdate = () => {
     routes.find((rte: RouteProps) => rte.id === id)
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [oldRoute, setOldRoute] = useState<RouteProps>(
+    routes.find((rte: RouteProps) => rte.id === id)
+  );
+
   const [newPoint, setNewPoint] = useState<WaypointProps>({
     id: generateRandomId(),
     name: "",
@@ -47,14 +52,17 @@ const RouteUpdate = () => {
   const handleUpdateRoute = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    navigate("/");
+  };
+
+  useEffect(() => {
     setRoutes(
       routes.map((rte: RouteProps) =>
         rte.id === updateRoute.id ? updateRoute : rte
       )
     );
-
-    navigate("/");
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [updateRoute]);
 
   const handleAddPoint = () => {
     setUpdateRoute({
@@ -75,6 +83,11 @@ const RouteUpdate = () => {
         <div className="routes-header-left">
           <button
             onClick={() => {
+              setRoutes([
+                ...routes.map((rte: RouteProps) =>
+                  rte.id === id ? oldRoute : rte
+                ),
+              ]);
               navigate("/");
             }}
           >
@@ -192,6 +205,7 @@ const RouteUpdate = () => {
           <button
             style={{
               marginTop: "4rem",
+              marginBottom: "4rem",
             }}
             disabled={
               updateRoute.name === "" ||
