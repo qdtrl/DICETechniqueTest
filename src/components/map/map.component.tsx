@@ -85,7 +85,7 @@ const Map = () => {
             },
             paint: {
               "line-color": "#0070fe",
-              "line-width": 4,
+              "line-width": 2,
             },
           });
 
@@ -94,7 +94,7 @@ const Map = () => {
             type: "circle",
             source: route.id + "-point",
             paint: {
-              "circle-radius": 10,
+              "circle-radius": 7,
               "circle-color": "#0070fe",
             },
           });
@@ -189,7 +189,7 @@ const Map = () => {
             },
             paint: {
               "line-color": "#0070fe",
-              "line-width": 4,
+              "line-width": 2,
             },
           });
         }
@@ -199,7 +199,7 @@ const Map = () => {
             type: "circle",
             source: route.id + "-point",
             paint: {
-              "circle-radius": 10,
+              "circle-radius": 7,
               "circle-color": "#0070fe",
             },
           });
