@@ -169,6 +169,7 @@ const RouteUpdate = () => {
               <input
                 style={{ width: "100px" }}
                 type="number"
+                max={360}
                 value={newPoint.lat}
                 onChange={(e) =>
                   setNewPoint({ ...newPoint, lat: Number(e.target.value) })
@@ -180,6 +181,7 @@ const RouteUpdate = () => {
               <input
                 style={{ width: "100px" }}
                 type="number"
+                max={360}
                 value={newPoint.lng}
                 onChange={(e) =>
                   setNewPoint({ ...newPoint, lng: Number(e.target.value) })

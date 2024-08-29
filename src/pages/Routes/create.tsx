@@ -107,6 +107,7 @@ const RouteCreate = () => {
             setNewRoute({ ...newRoute, startDate: e.target.value })
           }
         />
+
         <br />
 
         <label>Waypoints :</label>
@@ -158,6 +159,7 @@ const RouteCreate = () => {
             <label>Latitude :</label>
             <input
               style={{ width: "100px" }}
+              max={360}
               type="number"
               value={newPoint.lat}
               onChange={(e) =>
@@ -169,6 +171,7 @@ const RouteCreate = () => {
             <label>Longitude :</label>
             <input
               style={{ width: "100px" }}
+              max={360}
               type="number"
               value={newPoint.lng}
               onChange={(e) =>
