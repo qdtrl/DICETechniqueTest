@@ -25,10 +25,11 @@ form.routes-form {
       text-align: center;
       font-size: 0.7rem;
       button {
+        background-color: transparent;
+
         svg {
           font-size: 1rem;
         }
-        background-color: transparent;
       }
     }
 
