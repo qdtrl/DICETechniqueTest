@@ -2,7 +2,7 @@ import { RouteProps, WaypointProps } from "./models";
 import { Drawer, Map } from "./components";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useEffect, useState } from "react";
-import { PointContext, RoutesContext } from "./contexts";
+import { WaypointContext, RoutesContext } from "./contexts";
 import Cookies from "js-cookie";
 import { COOKIE_DATA } from "./configs/config";
 
@@ -19,10 +19,10 @@ const App = () => {
 
   return (
     <RoutesContext.Provider value={{ routes, setRoutes }}>
-      <PointContext.Provider value={{ point, setPoint }}>
+      <WaypointContext.Provider value={{ point, setPoint }}>
         <Map />
         <Drawer />
-      </PointContext.Provider>
+      </WaypointContext.Provider>
     </RoutesContext.Provider>
   );
 };

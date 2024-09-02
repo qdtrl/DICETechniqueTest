@@ -2,15 +2,15 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RouteProps, WaypointProps } from "../../models";
 import "./create.scss";
-import { Delete } from "@mui/icons-material";
+import { Delete, Edit } from "@mui/icons-material";
 import { generateRandomId } from "../../functions";
-import { PointContext, RoutesContext } from "../../contexts";
+import { WaypointContext, RoutesContext } from "../../contexts";
 
 const RouteCreate = () => {
   const navigate = useNavigate();
 
   const { routes, setRoutes } = useContext(RoutesContext) as any;
-  const { point, setPoint } = useContext(PointContext);
+  const { point, setPoint } = useContext(WaypointContext);
 
   const [newRoute, setNewRoute] = useState<RouteProps>({
     id: generateRandomId(),
@@ -20,6 +20,9 @@ const RouteCreate = () => {
     points: [],
   });
 
+  const [editWaypoint, setEditWaypoint] = useState<WaypointProps | null>(null);
+
+  // Handle the state of routes with newRoute changes
   useEffect(() => {
     if (!routes.find((rte: RouteProps) => rte.id === newRoute.id)) {
       setRoutes([...routes, newRoute]);
@@ -33,6 +36,15 @@ const RouteCreate = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newRoute]);
 
+  // Handle the state of newRoute with routes changes
+  useEffect(() => {
+    const update = routes.find((rte: RouteProps) => rte.id === newRoute.id);
+    if (!update) return;
+    setNewRoute(update);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routes]);
+
+  // Add a new point to the route if a point is set on the map
   useEffect(() => {
     if (!point) return;
     setNewRoute({
@@ -72,6 +84,13 @@ const RouteCreate = () => {
     });
   };
 
+  const handleRemoveWaypoint = (id: string) => () => {
+    setNewRoute({
+      ...newRoute,
+      points: [...newRoute.points.filter((p: WaypointProps) => p.id !== id)],
+    });
+  };
+
   return (
     <div className="routes-container">
       <div className="routes-header">
@@ -94,6 +113,7 @@ const RouteCreate = () => {
         <label>Nom de la route :</label>
         <input
           type="text"
+          required
           placeholder="Routage 1"
           value={newRoute.name}
           onChange={(e) => setNewRoute({ ...newRoute, name: e.target.value })}
@@ -102,6 +122,7 @@ const RouteCreate = () => {
         <label>Date de début :</label>
         <input
           type="date"
+          required
           value={newRoute.startDate}
           onChange={(e) =>
             setNewRoute({ ...newRoute, startDate: e.target.value })
@@ -117,27 +138,70 @@ const RouteCreate = () => {
               <th style={{ textAlign: "left" }}>Nom</th>
               <th>Latitude</th>
               <th>Longitude</th>
-              <th></th>
+              <th colSpan={2} />
             </tr>
           </thead>
           <tbody>
             {newRoute.points.map((point: WaypointProps) => (
               <tr key={point.id}>
                 <td>{point.name}</td>
-                <td style={{ textAlign: "right" }}>{point.lat}</td>
-                <td style={{ textAlign: "right" }}>{point.lng}</td>
+                <td style={{ textAlign: "right" }}>
+                  {Boolean(editWaypoint?.id === point.id) ? (
+                    <input
+                      type="number"
+                      style={{ width: "50px" }}
+                      value={point.lat}
+                      onChange={(e) =>
+                        setNewRoute({
+                          ...newRoute,
+                          points: newRoute.points.map((p: WaypointProps) => {
+                            if (p.id === point.id) {
+                              return { ...p, lat: Number(e.target.value) };
+                            }
+                            return p;
+                          }),
+                        })
+                      }
+                    />
+                  ) : (
+                    point.lat
+                  )}
+                </td>
+                <td style={{ textAlign: "right" }}>
+                  {Boolean(editWaypoint?.id === point.id) ? (
+                    <input
+                      type="number"
+                      style={{ width: "50px" }}
+                      value={point.lng}
+                      onChange={(e) =>
+                        setNewRoute({
+                          ...newRoute,
+                          points: newRoute.points.map((p: WaypointProps) => {
+                            if (p.id === point.id) {
+                              return { ...p, lng: Number(e.target.value) };
+                            }
+                            return p;
+                          }),
+                        })
+                      }
+                    />
+                  ) : (
+                    point.lng
+                  )}
+                </td>
                 <td>
                   <button
-                    onClick={() =>
-                      setNewRoute({
-                        ...newRoute,
-                        points: [
-                          ...newRoute.points.filter(
-                            (p: WaypointProps) => p.id !== point.id
-                          ),
-                        ],
-                      })
-                    }
+                    style={{ width: "20px" }}
+                    type="button"
+                    onClick={() => setEditWaypoint(editWaypoint ? null : point)}
+                  >
+                    <Edit />
+                  </button>
+                </td>
+                <td>
+                  <button
+                    style={{ width: "20px" }}
+                    onClick={handleRemoveWaypoint(point.id)}
                   >
                     <Delete />
                   </button>
@@ -154,12 +218,19 @@ const RouteCreate = () => {
           value={newPoint.name}
           onChange={(e) => setNewPoint({ ...newPoint, name: e.target.value })}
         />
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <div style={{ width: "fit-content" }}>
+        <div style={{ display: "flex", gap: 12 }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+            }}
+          >
             <label>Latitude :</label>
             <input
               style={{ width: "100px" }}
-              max={360}
+              max={90}
+              min={-90}
               type="number"
               value={newPoint.lat}
               onChange={(e) =>
@@ -167,7 +238,13 @@ const RouteCreate = () => {
               }
             />
           </div>
-          <div style={{ width: "fit-content", paddingLeft: "auto" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+            }}
+          >
             <label>Longitude :</label>
             <input
               style={{ width: "100px" }}
@@ -200,11 +277,7 @@ const RouteCreate = () => {
             marginTop: "4rem",
             marginBottom: "4rem",
           }}
-          disabled={
-            newRoute.name === "" ||
-            newRoute.startDate === "" ||
-            newRoute.points.length === 0
-          }
+          disabled={newRoute.points.length === 0}
           type="submit"
         >
           Créer

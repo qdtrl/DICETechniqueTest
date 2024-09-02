@@ -31,6 +31,10 @@ form.routes-form {
         background-color: transparent;
       }
     }
+
+    td {
+      height: 52px;
+    }
     tr {
       border-bottom: 1px solid $text-color;
     }

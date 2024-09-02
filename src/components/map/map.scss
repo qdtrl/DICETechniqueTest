@@ -1,8 +1,21 @@
+@import "../../configs/config.scss";
+
 section.map {
   height: 100vh;
   width: 80vw;
   div.map-container {
     height: 100%;
     width: 100%;
+
+    div.marker-waypoint {
+      z-index: 1000;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      &:hover {
+        background-color: $background-color;
+        opacity: 0.8;
+      }
+    }
   }
 }

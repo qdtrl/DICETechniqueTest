@@ -1,4 +1,4 @@
 import RoutesContext from "./routes.context";
-import PointContext from "./point.context";
+import WaypointContext from "./waypoint.context";
 
-export { RoutesContext, PointContext };
+export { RoutesContext, WaypointContext };

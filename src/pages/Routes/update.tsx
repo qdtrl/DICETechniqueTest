@@ -1,16 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { PointContext, RoutesContext } from "../../contexts";
+import { WaypointContext, RoutesContext } from "../../contexts";
 import { generateRandomId } from "../../functions";
 import { WaypointProps, RouteProps } from "../../models";
-import { Delete } from "@mui/icons-material";
+import { Delete, Edit } from "@mui/icons-material";
 
 const RouteUpdate = () => {
   const navigate = useNavigate();
   const id = useParams().id;
 
   const { routes, setRoutes } = useContext(RoutesContext) as any;
-  const { point, setPoint } = useContext(PointContext);
+  const { point, setPoint } = useContext(WaypointContext);
+  const [editWaypoint, setEditWaypoint] = useState<WaypointProps | null>(null);
 
   const [updateRoute, setUpdateRoute] = useState<RouteProps>(
     routes.find((rte: RouteProps) => rte.id === id)
@@ -28,6 +29,7 @@ const RouteUpdate = () => {
     lng: 0,
   });
 
+  // Redirect to home if route is not found
   useEffect(() => {
     if (!updateRoute) {
       navigate("/");
@@ -36,6 +38,25 @@ const RouteUpdate = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Handle the state of routes with updateRoute changes
+  useEffect(() => {
+    setRoutes(
+      routes.map((rte: RouteProps) =>
+        rte.id === updateRoute.id ? updateRoute : rte
+      )
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [updateRoute]);
+
+  // Handle the state of updateRoute with routes changes
+  useEffect(() => {
+    const update = routes.find((rte: RouteProps) => rte.id === updateRoute.id);
+    if (!update) return;
+    setUpdateRoute(update);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routes]);
+
+  // Add a new point to the route if a point is set on the map
   useEffect(() => {
     if (!point) return;
     setUpdateRoute({
@@ -55,15 +76,6 @@ const RouteUpdate = () => {
     navigate("/");
   };
 
-  useEffect(() => {
-    setRoutes(
-      routes.map((rte: RouteProps) =>
-        rte.id === updateRoute.id ? updateRoute : rte
-      )
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updateRoute]);
-
   const handleAddPoint = () => {
     setUpdateRoute({
       ...updateRoute,
@@ -74,6 +86,13 @@ const RouteUpdate = () => {
       name: "",
       lat: 0,
       lng: 0,
+    });
+  };
+
+  const handleRemoveWaypoint = (id: string) => () => {
+    setUpdateRoute({
+      ...updateRoute,
+      points: [...updateRoute.points.filter((p: WaypointProps) => p.id !== id)],
     });
   };
 
@@ -101,6 +120,7 @@ const RouteUpdate = () => {
         <form onSubmit={handleUpdateRoute} className="routes-form">
           <label>Nom de la route :</label>
           <input
+            required
             type="text"
             placeholder="Routage 1"
             value={updateRoute?.name}
@@ -112,6 +132,7 @@ const RouteUpdate = () => {
           <label>Date de début :</label>
           <input
             type="date"
+            required
             value={updateRoute?.startDate}
             onChange={(e) =>
               setUpdateRoute({ ...updateRoute, startDate: e.target.value })
@@ -126,27 +147,76 @@ const RouteUpdate = () => {
                 <th style={{ textAlign: "left" }}>Nom</th>
                 <th>Latitude</th>
                 <th>Longitude</th>
-                <th></th>
+                <th colSpan={2} />
               </tr>
             </thead>
             <tbody>
               {updateRoute?.points.map((point: WaypointProps) => (
                 <tr key={point.id}>
                   <td>{point.name}</td>
-                  <td style={{ textAlign: "right" }}>{point.lat}</td>
-                  <td style={{ textAlign: "right" }}>{point.lng}</td>
+                  <td style={{ textAlign: "right" }}>
+                    {Boolean(editWaypoint?.id === point.id) ? (
+                      <input
+                        type="number"
+                        style={{ width: "50px" }}
+                        value={point.lat}
+                        onChange={(e) =>
+                          setUpdateRoute({
+                            ...updateRoute,
+                            points: updateRoute.points.map(
+                              (p: WaypointProps) => {
+                                if (p.id === point.id) {
+                                  return { ...p, lng: Number(e.target.value) };
+                                }
+                                return p;
+                              }
+                            ),
+                          })
+                        }
+                      />
+                    ) : (
+                      point.lat
+                    )}
+                  </td>
+                  <td style={{ textAlign: "right" }}>
+                    {Boolean(editWaypoint?.id === point.id) ? (
+                      <input
+                        type="number"
+                        style={{ width: "50px" }}
+                        value={point.lng}
+                        onChange={(e) =>
+                          setUpdateRoute({
+                            ...updateRoute,
+                            points: updateRoute.points.map(
+                              (p: WaypointProps) => {
+                                if (p.id === point.id) {
+                                  return { ...p, lng: Number(e.target.value) };
+                                }
+                                return p;
+                              }
+                            ),
+                          })
+                        }
+                      />
+                    ) : (
+                      point.lng
+                    )}
+                  </td>
                   <td>
                     <button
+                      style={{ width: "20px" }}
+                      type="button"
                       onClick={() =>
-                        setUpdateRoute({
-                          ...updateRoute,
-                          points: [
-                            ...updateRoute.points.filter(
-                              (p: WaypointProps) => p.id !== point.id
-                            ),
-                          ],
-                        })
+                        setEditWaypoint(editWaypoint ? null : point)
                       }
+                    >
+                      <Edit />
+                    </button>
+                  </td>
+                  <td>
+                    <button
+                      style={{ width: "20px" }}
+                      onClick={handleRemoveWaypoint(point.id)}
                     >
                       <Delete />
                     </button>
@@ -163,20 +233,33 @@ const RouteUpdate = () => {
             value={newPoint.name}
             onChange={(e) => setNewPoint({ ...newPoint, name: e.target.value })}
           />
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <div style={{ width: "fit-content" }}>
+          <div style={{ display: "flex", gap: 12 }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+              }}
+            >
               <label>Latitude :</label>
               <input
                 style={{ width: "100px" }}
                 type="number"
-                max={360}
+                max={90}
+                min={-90}
                 value={newPoint.lat}
                 onChange={(e) =>
                   setNewPoint({ ...newPoint, lat: Number(e.target.value) })
                 }
               />
             </div>
-            <div style={{ width: "fit-content", paddingLeft: "auto" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+              }}
+            >
               <label>Longitude :</label>
               <input
                 style={{ width: "100px" }}
@@ -209,11 +292,7 @@ const RouteUpdate = () => {
               marginTop: "4rem",
               marginBottom: "4rem",
             }}
-            disabled={
-              updateRoute.name === "" ||
-              updateRoute.startDate === "" ||
-              updateRoute.points.length === 0
-            }
+            disabled={updateRoute.points.length === 0}
             type="submit"
           >
             Mettre à jour
